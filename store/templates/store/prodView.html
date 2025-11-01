@@ -1,0 +1,233 @@
+{% extends "store/basic.html" %}
+
+{% block title %}{{ product.product_name }} - My Awesome Cart{% endblock %}
+
+{% block css %}
+<style>
+body {
+  background-color: #f8fdfc;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* 🔹 Product Section */
+.product-section {
+  padding: 60px 0;
+}
+
+/* 🔹 Product Card */
+.product-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 166, 166, 0.15);
+  padding: 2.5rem;
+  transition: all 0.3s ease;
+}
+.product-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 166, 166, 0.25);
+}
+
+/* 🔹 Product Image */
+.product-image {
+  width: 100%;
+  max-height: 350px;
+  border-radius: 12px;
+  object-fit: contain;
+  background-color: #f0faf9;
+  padding: 15px;
+  transition: transform 0.4s ease;
+}
+.product-image:hover {
+  transform: scale(1.05);
+}
+
+/* 🔹 Product Details */
+.product-details h2 {
+  font-weight: 700;
+  color: #007b83;
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+.product-details p {
+  font-size: 1.05rem;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.price-tag {
+  font-size: 1.6rem;
+  color: #00a6a6;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+
+/* 🔹 Buttons */
+.btn-add {
+  background: #00a6a6;
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 12px 30px;
+  font-size: 1rem;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,166,166,0.25);
+  width: 100%;
+}
+.btn-add:hover {
+  background: #007b83;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,166,166,0.35);
+}
+
+.btn-back {
+  background: #e6fafa;
+  color: #007b83;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 12px 30px;
+  font-size: 1rem;
+  border: 2px solid #00a6a6;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+.btn-back:hover {
+  background: #d4f4f4;
+  color: #005f61;
+  transform: translateY(-2px);
+}
+
+/* 🔹 Responsive Tweaks */
+@media (max-width: 992px) {
+  .product-card {
+    padding: 2rem;
+  }
+  .product-details h2 {
+    font-size: 1.8rem;
+  }
+  .product-details p {
+    font-size: 1rem;
+  }
+  .price-tag {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-section {
+    padding: 30px 10px;
+  }
+  .product-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+  .product-image {
+    max-height: 300px;
+    margin-bottom: 1.5rem;
+  }
+  .product-details h2 {
+    font-size: 1.6rem;
+  }
+  .price-tag {
+    font-size: 1.3rem;
+  }
+  .btn-add,
+  .btn-back {
+    width: 100%;
+    margin-bottom: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-details h2 {
+    font-size: 1.4rem;
+  }
+  .product-details p {
+    font-size: 0.95rem;
+  }
+  .price-tag {
+    font-size: 1.2rem;
+  }
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container product-section">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="row g-4 product-card align-items-center">
+        
+        <!-- 🖼️ Product Image -->
+        <div class="col-md-5 text-center">
+          <img src="/media/{{ product.image }}" 
+               alt="{{ product.product_name }}" 
+               class="img-fluid product-image shadow-sm">
+        </div>
+        
+        <!-- 🧾 Product Details -->
+        <div class="col-md-7 product-details">
+          <h2 id="namepr{{ product.product_id }}">{{ product.product_name }}</h2>
+          <p>{{ product.desc }}</p>
+          <h4 id="pricepr{{ product.product_id }}" class="price-tag">
+            ₹{{ product.price }}
+          </h4>
+
+          <!-- ✅ Buttons -->
+          <div id="divpr{{ product.product_id }}" class="divpr mb-3">
+            <button class="btn btn-add cart"
+                    data-id="pr{{ product.product_id }}"
+                    data-name="{{ product.product_name }}"
+                    data-price="{{ product.price }}">
+              🛒 Add to Cart
+            </button>
+          </div>
+
+          <a href="{% url 'store-home' %}" class="btn btn-back">← Continue Shopping</a>
+
+          <input type="hidden" id="itemsJson" name="itemsJson">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(function() {
+  let cart = {};
+  try { cart = JSON.parse(localStorage.getItem("cart")) || {}; }
+  catch(e) { cart = {}; }
+
+  function updateCartUI() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    let totalQty = 0;
+    for (let id in cart) totalQty += cart[id].qty;
+    $("#cart").text(totalQty);
+  }
+
+  updateCartUI();
+
+  $(document).on("click", ".cart", function(e) {
+    e.preventDefault();
+    const id = $(this).data("id");
+    const name = $(this).data("name");
+    const price = parseFloat($(this).data("price")) || 0;
+    if (cart[id]) cart[id].qty += 1;
+    else cart[id] = { qty: 1, name, price };
+    $(this)
+      .removeClass("btn-add")
+      .addClass("btn-success")
+      .text("✅ Added!");
+    setTimeout(() => {
+      $(this)
+        .removeClass("btn-success")
+        .addClass("btn-add")
+        .html("🛒 Add to Cart");
+    }, 1200);
+    updateCartUI();
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "store/basic.html" %}
+{% block body %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment - Medicart</title>
+
+    <!-- Razorpay Checkout -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-green-100 font-sans">
+
+    <div class="min-h-screen flex items-center justify-center p-6">
+        <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-lg w-full" data-aos="fade-up" data-aos-duration="1000">
+            <!-- Header -->
+            <div class="text-center mb-8">
+<img src="https://cdn-icons-png.flaticon.com/512/2965/2965697.png" alt="Medicine Logo" class="mx-auto h-20 w-20 mb-4 animate-bounce">
+                <h1 class="text-3xl font-extrabold text-green-700 mb-1">Medicart Payment</h1>
+                <p class="text-gray-500 text-sm">Fast, safe, and secure checkout powered by Razorpay</p>
+            </div>
+
+            <!-- Order Details -->
+            <div class="mb-6 border rounded-xl border-gray-200 p-6 bg-green-50 shadow-inner" data-aos="zoom-in" data-aos-delay="200">
+                <h2 class="text-xl font-semibold text-gray-700 mb-3 flex items-center">
+                    <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"></path>
+                    </svg>
+                    Order Summary
+                </h2>
+                <p class="mb-1"><span class="font-medium">Name:</span> {{ order.name }}</p>
+                <p class="mb-1"><span class="font-medium">Email:</span> {{ order.email }}</p>
+<p class="mb-1"><span class="font-medium">Amount:</span> ₹{{ display_amount|floatformat:2 }}</p>
+                <span class="inline-block mt-3 px-3 py-1 text-sm font-semibold text-green-800 bg-green-200 rounded-full">Secure Payment</span>
+            </div>
+
+            <!-- Payment Button -->
+            <div class="text-center" data-aos="fade-up" data-aos-delay="400">
+                <button id="pay-now" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg transform hover:scale-105 transition duration-300">
+                    Pay Now ₹{{ display_amount|floatformat:2 }}
+                </button>
+            </div>
+
+            <p class="mt-6 text-center text-gray-400 text-sm">We use Razorpay for 100% secure payment processing. Your payment info is safe with us.</p>
+        </div>
+    </div>
+
+    <script>
+        AOS.init();
+
+        var options = {
+            "key": "{{ razorpay_merchant_key }}",
+            "amount": "{{ amount }}", 
+            "currency": "{{ currency }}",
+            "name": "Medicart",
+            "description": "Complete your purchase",
+            "order_id": "{{ razorpay_order_id }}",
+            "handler": function (response){
+                var form = document.createElement('form');
+                form.method = "POST";
+                form.action = "{{ callback_url }}";
+
+                var csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = '{{ csrf_token }}';
+                form.appendChild(csrfInput);
+
+                var paymentIdInput = document.createElement('input');
+                paymentIdInput.type = 'hidden';
+                paymentIdInput.name = 'razorpay_payment_id';
+                paymentIdInput.value = response.razorpay_payment_id;
+                form.appendChild(paymentIdInput);
+
+                var orderIdInput = document.createElement('input');
+                orderIdInput.type = 'hidden';
+                orderIdInput.name = 'razorpay_order_id';
+                orderIdInput.value = response.razorpay_order_id;
+                form.appendChild(orderIdInput);
+
+                var signatureInput = document.createElement('input');
+                signatureInput.type = 'hidden';
+                signatureInput.name = 'razorpay_signature';
+                signatureInput.value = response.razorpay_signature;
+                form.appendChild(signatureInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            },
+            "prefill": {
+                "name": "{{ order.name }}",
+                "email": "{{ order.email }}"
+            },
+            "theme": {
+                "color": "#10B981"
+            }
+        };
+
+        document.getElementById('pay-now').onclick = function(e){
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
+</body>
+</html>
+
+{% endblock %}

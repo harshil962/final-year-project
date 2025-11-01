@@ -1,0 +1,231 @@
+{% extends 'store/basic.html' %}
+{% load static %}
+
+{% block title %}MediCart - Healthcare{% endblock %}
+
+{% block css %}
+<style>
+/* Overall background */
+body {
+  background-color: #f8fdfc;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Carousel styling */
+.carousel-indicators {
+  bottom: -25px;
+}
+.carousel-indicators .active {
+  background-color: #00a6a6;
+}
+.carousel-indicators button {
+  background-color: #cdeaea;
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+}
+
+/* Carousel Controls */
+.carousel-control-prev,
+.carousel-control-next {
+  top: 50%;
+  transform: translateY(-50%);
+  width: auto !important;
+  height: auto !important;
+  opacity: 1;
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #00a6a6;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  background-size: 60% 60%;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: all 0.3s ease;
+}
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+  background-color: #007b83;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 166, 166, 0.4);
+}
+
+/* Card Styling */
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 2px solid rgba(0, 166, 166, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0px 3px 10px rgba(0, 166, 166, 0.1);
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 6px 15px rgba(0, 166, 166, 0.2);
+}
+.card img {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  border-bottom: 1px solid #e6f7f7;
+  border-radius: 12px 12px 0 0;
+}
+.card-body {
+  padding: 10px;
+}
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #007b83;
+}
+.card-text {
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+.card h6 {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+/* Buttons */
+.btn-add {
+  background: #00a6a6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  min-width: 100px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,166,166,0.25);
+  margin: 3px 2px;
+}
+.btn-add:hover {
+  background: #007b83;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,166,166,0.35);
+}
+.btn-view {
+  background: transparent;
+  color: #007b83;
+  border: 2px solid #00a6a6;
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  min-width: 100px;
+  text-align: center;
+  margin: 3px 2px;
+}
+.btn-view:hover {
+  background: #e6fafa;
+  color: #007b83;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0,166,166,0.2);
+}
+
+/* Popover */
+.popover {
+  box-shadow: 0 4px 12px rgba(0, 166, 166, 0.25);
+  border-radius: 8px;
+}
+
+/* Hero Section Responsive */
+@media (max-width: 767px) {
+  .hero-text h1 {
+    font-size: 1.5rem;
+    
+  }
+  .hero-text p {
+    font-size: 0.9rem;
+  }
+  .hero-text .btn {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+  }
+  .card img {
+    height: 120px;
+  }
+  .carousel-item .row {
+    flex-direction: column;
+  }
+  .carousel-item .col-md-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+  }
+    .carousel-control-prev,
+    .carousel-control-next {
+      display: none !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+
+
+
+  <!-- Product Carousels -->
+  {% for Product, range, nSlides in allProds %}
+    <h4 class="my-4 fw-bold" data-aos="fade-up" data-aos-delay="100">{{ Product.0.category }}</h4>
+    <div id="demo{{ forloop.counter }}" class="carousel slide my-3" data-bs-ride="carousel">
+
+      <!-- Indicators -->
+      <div class="carousel-indicators" data-aos="fade-up" data-aos-delay="200">
+        <button type="button" data-bs-target="#demo{{ forloop.counter }}" data-bs-slide-to="0" class="active"></button>
+        {% for i in range %}
+          <button type="button" data-bs-target="#demo{{ forloop.counter }}" data-bs-slide-to="{{ i }}"></button>
+        {% endfor %}
+      </div>
+
+      <!-- Carousel Inner -->
+      <div class="carousel-inner">
+        {% for i in Product %}
+          {% if forloop.counter0|divisibleby:4 %}
+            <div class="carousel-item {% if forloop.counter0 == 0 %}active{% endif %}">
+              <div class="row">
+          {% endif %}
+                  <div class="col-12 col-sm-6 col-md-3 mb-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                    <div class="card" data-aos="flip-left" data-aos-delay="{{ forloop.counter0|add:150 }}">
+                      <img src="/media/{{ i.image }}" class="card-img-top" alt="{{ i.product_name }}" loading="lazy">
+                      <div class="card-body text-center">
+                        <h5 class="card-title" id="namepr{{ i.product_id }}">{{ i.product_name }}</h5>
+                        <p class="card-text">{{ i.desc|slice:":80" }}...</p>
+                        <h6 id="pricepr{{ i.product_id }}">Price: ₹{{ i.price }}</h6>
+                     <span id="divpr{{ i.product_id }}" class="divpr">
+  <button class="btn btn-add cart" data-id="pr{{ i.product_id }}" data-aos="fade-up">Add To Cart</button>
+</span>
+                        <a href="{% url 'productview' i.product_id %}" class="btn-view w-100" data-aos="fade-up">Quick View</a>
+                      </div>
+                    </div>
+                  </div>
+          {% if forloop.counter|divisibleby:4 or forloop.last %}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Controls -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#demo{{ forloop.counter }}" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" data-aos="fade-right"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#demo{{ forloop.counter }}" data-bs-slide="next">
+        <span class="carousel-control-next-icon" data-aos="fade-left"></span>
+      </button>
+    </div>
+  {% endfor %}
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  AOS.init({ duration: 800, once: true });
+</script>
+{% endblock %}

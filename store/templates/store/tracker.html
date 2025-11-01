@@ -1,0 +1,153 @@
+{% extends 'store/basic.html' %}
+{% block title %}Track Your Prescription - My MedStore{% endblock %}
+
+{% block body %}
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<div class="container my-5">
+
+    <h1 class="text-center mb-5 text-primary">🩺 Prescription Tracker</h1>
+
+    <div class="row justify-content-center mb-5" data-aos="fade-down" data-aos-once="true">
+        <div class="col-md-8">
+            <div class="card shadow-lg p-4 border-0 rounded-3 border-top border-5 border-primary">
+                <h2 class="text-center mb-4 text-dark">Find Your Order</h2>
+                <p class="text-center text-muted">Enter your order ID and email to check the status of your medication.</p>
+                <form method="post" id="trackerForm">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="orderId" class="form-label text-primary">Order ID</label>
+                            <input type="text" class="form-control form-control-lg border-primary" id="orderId" name="orderId" placeholder="e.g., MED-12345" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label text-primary">Email</label>
+                            <input type="email" class="form-control form-control-lg border-primary" id="email" name="email" placeholder="name@domain.com" required>
+                        </div>
+                        <div class="col-12 text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm w-50">
+                                <i class="fas fa-search"></i> Track Order
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center" data-aos="fade-up" data-aos-once="true" data-aos-delay="200">
+        <div class="col-md-8">
+            <h3 class="text-center mb-3 text-dark">📦 Current Status</h3>
+            <ul class="list-group shadow-sm" id="citems">
+                <li class="list-group-item text-center text-muted py-4">
+                    <i class="fas fa-info-circle"></i> Please submit your details above.
+                </li>
+            </ul>
+            <div class="mt-3 text-end">
+                <strong class="text-dark">Total Quantity: </strong>
+                <span id="totalQty" class="badge bg-success py-2 px-3 rounded-pill">0</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+$(document).ready(function() { // Use document.ready for consistency
+
+    // Initialize AOS here (moved initialization into the JS block)
+    AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true
+    });
+
+    $('#trackerForm').submit(function(event){
+        event.preventDefault();
+
+        $('#citems').empty().append('<li class="list-group-item text-center text-info py-3"><i class="fas fa-spinner fa-spin"></i> Checking status...</li>');
+        $('#totalQty').text('0');
+
+        var formData = {
+            'orderId': $('#orderId').val(),
+            'email': $('#email').val(),
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/store/tracker/',
+            data: formData,
+            dataType: 'json'
+        })
+        .done(function(response){
+            $('#citems').empty();
+
+            if(response.error){
+                $('#citems').append(`<li class="list-group-item list-group-item-danger text-center py-3">🛑 ${response.error}</li>`);
+                $('#totalQty').text('0');
+            } else {
+                let totalQty = 0;
+
+                // Parse items JSON if needed
+                let items = response.items;
+                if(typeof items === "string"){
+                    items = JSON.parse(items);
+                }
+
+                // Show Order Items
+                // Changed active class to bg-primary for blue header
+                $('#citems').append('<li class="list-group-item bg-primary text-white text-center">💊 Your Items</li>');
+                
+                for(let key in items){
+                    let item = items[key];
+                    totalQty += Number(item.qty); 
+                    
+                    $('#citems').append(`
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${item.name || key}
+                            <span class="badge bg-info text-dark rounded-pill py-1 px-3">Qty: ${item.qty}</span>
+                        </li>
+                    `);
+                }
+
+                $('#totalQty').text(totalQty);
+
+                // Show Updates
+                if(response.updates && response.updates.length > 0){
+                    $('#citems').append('<li class="list-group-item bg-dark text-white text-center mt-3">🕒 Order Updates</li>');
+                    
+                    for(let u of response.updates){
+                        let status = u.text.toLowerCase();
+                        let badgeClass = 'bg-secondary';
+                        // Using medical-themed colors for status updates
+                        if(status.includes('placed')) badgeClass = 'bg-primary';       // Blue
+                        else if(status.includes('shipped')) badgeClass = 'bg-info';    // Light Blue
+                        else if(status.includes('out for delivery')) badgeClass = 'bg-warning text-dark'; // Yellow
+                        else if(status.includes('delivered')) badgeClass = 'bg-success'; // Green
+
+                        $('#citems').append(`
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                ${u.text}
+                                <span class="badge ${badgeClass} rounded-pill">${u.time}</span>
+                            </li>
+                        `);
+                    }
+                } else {
+                    $('#citems').append('<li class="list-group-item text-center text-muted">No status updates available.</li>');
+                }
+            }
+        })
+        .fail(function(){
+            $('#citems').empty();
+            $('#citems').append('<li class="list-group-item text-center text-danger py-3">⚠️ Could not connect to the server. Try again later.</li>');
+            $('#totalQty').text('0');
+        });
+    });
+});
+</script>
+{% endblock %}

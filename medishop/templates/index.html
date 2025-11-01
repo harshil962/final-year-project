@@ -1,0 +1,177 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Welcome To Medistore</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- AOS Animation -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+      body {
+        font-family: 'Nunito', sans-serif;
+        background: linear-gradient(135deg, #f0fdfb 0%, #e0f7f4 100%);
+        color: #03312e;
+        margin: 0;
+        padding: 0;
+      }
+
+      .hero {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        padding: 80px 20px;
+        text-align: center;
+        margin: 80px auto 40px auto;
+        max-width: 900px;
+        transition: all 0.3s ease;
+      }
+
+      .hero:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+      }
+
+      /* Typing animation */
+.store-name {
+    font-weight: 900;
+    font-size: 3rem;
+    background: linear-gradient(90deg, #0b7a6c, #0ea37e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 4px solid #0b7a6c; /* cursor */
+    width: fit-content; /* updated */
+    display: inline-block; /* updated */
+    animation: typing 2s steps(9, end) forwards, blink 0.7s step-end infinite alternate;
+}
+
+
+      @keyframes typing {
+        from { width: 0 }
+        to { width: 9ch } /* number of letters in "Medistore" */
+      }
+
+      @keyframes blink {
+        from, to { border-color: transparent }
+        50% { border-color: #0b7a6c; }
+      }
+
+      .hero p {
+        color: #1a4a45;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+      }
+
+      .hero .btn {
+        border-radius: 30px;
+        padding: 12px 30px;
+        font-size: 1rem;
+        transition: 0.3s;
+        margin: 5px;
+      }
+
+      .btn-primary {
+        background-color: #0b7a6c;
+        border: none;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: #055c4f;
+      }
+
+      .btn-success {
+        background-color: #0ea37e;
+        border: none;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background-color: #0b7a6c;
+      }
+
+      footer {
+        text-align: center;
+        color: #055c4f;
+        margin-top: 60px;
+        padding: 20px;
+        font-size: 0.9rem;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 767px) {
+        .hero {
+          padding: 50px 15px;
+          margin: 50px 10px 20px 10px;
+        }
+        .store-name {
+          font-size: 2.2rem;
+        }
+        .hero p {
+          font-size: 1rem;
+        }
+        .hero .btn {
+          font-size: 0.9rem;
+          padding: 10px 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="hero" data-aos="fade-up">
+        <div>
+          <img src="data:image/jpeg;base64,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" alt="MediCart">
+        </div>
+<h1 class="store-name mx-auto text-center" data-aos="zoom-in" data-aos-delay="150">MediCart</h1>
+        <p class="lead mb-3" data-aos="fade-up" data-aos-delay="300">
+          Your trusted online medical store — order medicines, health products, and wellness essentials easily.
+        </p>
+        <hr class="w-50 mx-auto" data-aos="zoom-in" data-aos-delay="400">
+        <p class="mb-4" data-aos="fade-up" data-aos-delay="450">
+          Get genuine medicines, fast delivery, and affordable prices — because your health matters most.
+        </p>
+        <div data-aos="fade-up" data-aos-delay="550">
+          <a class="btn btn-primary me-3" href="/store" role="button">🛒 Shop Medicines</a>
+          <a class="btn btn-success" href="/blog" role="button">📖 Health Blog</a>
+        </div>
+      </div>
+    </div>
+
+    <footer data-aos="fade-up" data-aos-delay="600">
+      © 2025 Medistore | Caring for You, Always 💚
+    </footer>
+
+    <!-- JS Files -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 800,
+        once: true
+      });
+    </script>
+
+    <script>
+      // Optional redirect after 5 seconds
+      setTimeout(function() {
+        window.location = "/store";
+      }, 5000);
+    </script>
+  </body>
+</html>

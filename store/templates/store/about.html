@@ -1,0 +1,245 @@
+{% extends "store/basic.html" %}
+{% load static %}
+{% block title %}About Medicart{% endblock %}
+{% block body %}
+
+<!-- Google Font -->
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    font-family: "Poppins", sans-serif;
+    background-color: #f9fdfd;
+    color: #333;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #e3f2fd, #ffffff);
+    padding: 100px 0;
+    text-align: center;
+    border-radius: 0 0 50px 50px;
+  }
+
+  .hero h1 {
+    font-weight: 700;
+    color: #007bff;
+  }
+
+  .hero p {
+    max-width: 650px;
+    margin: 15px auto;
+    color: #555;
+    font-size: 1.1rem;
+  }
+
+  .btn-custom {
+    background: linear-gradient(135deg, #00a6a6, #007bff);
+    color: #fff;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 8px;
+    transition: 0.3s ease;
+  }
+
+  .btn-custom:hover {
+    background: linear-gradient(135deg, #007bff, #00a6a6);
+    transform: translateY(-2px);
+  }
+
+  section {
+    padding: 70px 0;
+  }
+
+  h2 {
+    font-weight: 700;
+  }
+
+  .card {
+    border-radius: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .team-member img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #00a6a6;
+  }
+
+  .team-member h6 {
+    margin-top: 10px;
+    font-weight: 600;
+  }
+
+  .team-member p {
+    font-size: 0.9rem;
+    color: #777;
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: 70px 20px;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+    }
+
+    section {
+      padding: 50px 20px;
+    }
+  }
+</style>
+
+<main role="main">
+
+  <!-- Hero Section -->
+
+  <section class="hero" data-aos="fade-down">
+    <div class="container">
+      <h1 data-aos="fade-up" data-aos-delay="100">About <span style="color:#00a6a6;">Medicart</span></h1>
+      <p data-aos="fade-up" data-aos-delay="200">
+        Your trusted online medical store — making healthcare accessible, affordable, and reliable right from your home.
+      </p>
+      <a href="#mission" class="btn btn-custom mt-3" data-aos="fade-up" data-aos-delay="300">Learn More ↓</a>
+    </div>
+  </section>
+
+  <!-- Mission -->
+
+  <section id="mission" class="text-center">
+    <div class="container" data-aos="fade-up">
+      <h2 class="text-success mb-3">Our Mission</h2>
+      <p class="text-muted mx-auto" style="max-width: 700px;">
+        At Medicart, we simplify how people access medicines. Our goal is to provide a secure, transparent, and convenient
+        healthcare shopping experience, ensuring you get genuine products from trusted sources — fast and easy.
+      </p>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+
+  <section class="bg-white text-center">
+    <div class="container">
+      <h2 class="text-primary mb-5" data-aos="fade-up">Why Choose Medicart?</h2>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card border-0 shadow-sm p-4">
+            <i class="bi bi-speedometer2 text-success fs-1"></i>
+            <h5 class="mt-3 fw-semibold">Fast & Easy Orders</h5>
+            <p class="text-muted">Browse, select, and order your medicines online with just a few taps.</p>
+          </div>
+        </div>
+
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+      <div class="card border-0 shadow-sm p-4">
+        <i class="bi bi-lock-fill text-primary fs-1"></i>
+        <h5 class="mt-3 fw-semibold">Secure Payments</h5>
+        <p class="text-muted">Your transactions are encrypted and protected with industry-grade security.</p>
+      </div>
+    </div>
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+      <div class="card border-0 shadow-sm p-4">
+        <i class="bi bi-headset text-danger fs-1"></i>
+        <h5 class="mt-3 fw-semibold">24/7 Support</h5>
+        <p class="text-muted">Our dedicated team is available around the clock for your assistance.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  </section>
+
+  <!-- Features -->
+
+  <section class="bg-light text-center">
+    <div class="container">
+      <h2 class="text-primary mb-5" data-aos="fade-up">Our Key Features</h2>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card shadow-sm border-0 p-4">
+            <i class="bi bi-bag-heart-fill text-primary fs-1"></i>
+            <h5 class="mt-3 fw-semibold">Wide Range of Medicines</h5>
+            <p class="text-muted">All your healthcare needs in one place — genuine and affordable.</p>
+          </div>
+        </div>
+
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+      <div class="card shadow-sm border-0 p-4">
+        <i class="bi bi-truck text-success fs-1"></i>
+        <h5 class="mt-3 fw-semibold">Reliable Delivery</h5>
+        <p class="text-muted">Safe and quick doorstep delivery across multiple locations.</p>
+      </div>
+    </div>
+
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+      <div class="card shadow-sm border-0 p-4">
+        <i class="bi bi-shield-check text-danger fs-1"></i>
+        <h5 class="mt-3 fw-semibold">Trusted & Genuine</h5>
+        <p class="text-muted">Every product is sourced from verified pharmacies and suppliers.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  </section>
+
+  <!-- Team -->
+
+  <section class="bg-white text-center">
+    <div class="container">
+      <h2 class="text-primary mb-3" data-aos="fade-up">Meet Our Team</h2>
+      <p class="text-muted mb-5" data-aos="fade-up" data-aos-delay="100">
+        A dedicated team striving to make healthcare accessible to everyone.
+      </p>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-3 team-member" data-aos="fade-up" data-aos-delay="200">
+          <img src="{% static 'store/images/sneha.jpeg' %}"alt="Dr. Sneha">
+          <h6>Dr. Sneha</h6>
+          <p>Pharmacy Expert</p>
+        </div>
+
+
+    <div class="col-md-3 team-member" data-aos="fade-up" data-aos-delay="300">
+      <img src="{% static 'store/images/profile.jpeg' %}" alt="Harshil Prajapati">
+      <h6>Harshil Prajapati</h6>
+      <p>Founder & Developer</p>
+    </div>
+
+    <div class="col-md-3 team-member" data-aos="fade-up" data-aos-delay="400">
+      <img src="{% static 'store/images/isha.jpeg' %}" alt="Isha Rajput">
+      <h6>Isha Rajput</h6>
+      <p>Healthcare Consultant</p>
+    </div>
+  </div>
+</div>
+
+
+  </section>
+</main>
+
+<!-- Bootstrap Icons -->
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<!-- AOS Animation -->
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+  AOS.init({ duration: 900, once: true });
+</script>
+
+{% endblock %}

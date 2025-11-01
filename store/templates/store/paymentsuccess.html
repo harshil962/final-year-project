@@ -1,0 +1,114 @@
+{% extends "store/basic.html" %}
+
+{% block body %}
+
+<style>
+  body {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .success-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 30px rgba(0, 128, 96, 0.15);
+    border-radius: 25px;
+    padding: 2.5rem;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+  }
+
+  .success-icon {
+    width: 90px;
+    height: 90px;
+    color: #16a34a;
+    margin-bottom: 1.2rem;
+    animation: pop 0.6s ease-in-out;
+  }
+
+  h1 {
+    font-size: 2.3rem;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+  }
+
+  .btn-green {
+    display: inline-block;
+    margin-top: 1.5rem;
+    background: linear-gradient(90deg, #16a34a, #10b981);
+    color: white;
+    padding: 0.9rem 2.2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-green:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 18px rgba(16, 185, 129, 0.3);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+</style>
+
+<div class="min-h-screen flex items-center justify-center px-4">
+  <div class="success-card max-w-md w-full">
+    <!-- Success Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="success-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+    </svg>
+
+```
+<!-- Header -->
+<h1>Payment Successful!</h1>
+
+<!-- Payment Details -->
+<p>🎉 Payment ID: <strong>{{ payment_id }}</strong></p>
+<p>🛒 Order ID: <strong>{{ order_id }}</strong></p>
+
+<!-- Continue Shopping Button -->
+<a href="{% url 'ShopHome' %}" class="btn-green">Continue Shopping</a>
+```
+
+  </div>
+</div>
+
+<!-- SweetAlert2 + Cart Clearing -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const orderId = "{{ order_id|default:'' }}";
+
+  Swal.fire({
+    icon: 'success',
+    title: 'Order Placed 🎉',
+    html: `Thanks for shopping with us!<br>Your order ID is <strong>${orderId}</strong>.`,
+    confirmButtonColor: '#16a34a',
+    confirmButtonText: 'OK',
+    allowOutsideClick: false
+  }).then(() => {
+    localStorage.removeItem('cart');
+    window.location.href = "{% url 'ShopHome' %}";
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "store/basic.html" %}
+{% block title %}Terms & Conditions{% endblock %}
+{% block body %}
+
+<section class="py-5" style="background-color: #f4fcfb; min-height: 80vh;">
+  <div class="container" data-aos="fade-up">
+
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+      <h1 class="fw-bold text-primary" style="font-family: 'Poppins', sans-serif;">Terms & Conditions</h1>
+      <p class="text-muted mt-2" style="font-size: 1.1rem;">
+        Please read these terms carefully before using Medicart services.
+      </p>
+    </div>
+
+    <!-- Terms Card -->
+    <div class="card shadow-sm border-0 rounded-4 p-4" style="background: #ffffff;">
+      
+      <div class="mb-4">
+        <h5 class="fw-semibold text-success mb-2">Acceptance of Terms</h5>
+        <p style="line-height: 1.7; font-size: 1rem; color: #555;">
+          By accessing or purchasing from Medicart, you agree to abide by our terms and policies. 
+          All products listed are subject to availability and applicable laws.
+        </p>
+      </div>
+
+      <div class="mb-4">
+        <h5 class="fw-semibold text-success mb-2">Order Cancellations</h5>
+        <p style="line-height: 1.7; font-size: 1rem; color: #555;">
+          Medicart reserves the right to cancel or refuse any order for reasons including pricing errors,
+          unavailability, or suspected fraud.
+        </p>
+      </div>
+
+      <div>
+        <h5 class="fw-semibold text-success mb-2">User Responsibilities</h5>
+        <p style="line-height: 1.7; font-size: 1rem; color: #555;">
+          All users must ensure their provided contact and address information is accurate for successful delivery.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- AOS Animation Init -->
+<script>
+  AOS.init({
+    duration: 800,
+    once: true
+  });
+</script>
+
+{% endblock %}

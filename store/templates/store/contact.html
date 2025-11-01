@@ -1,0 +1,155 @@
+{% extends "store/basic.html" %}
+{% load static %}
+{% block title %}Contact Us - MediCart{% endblock %}
+
+{% block body %}
+<!-- === Custom Styles === -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4fdfc;
+  color: #222;
+}
+
+/* === Contact Card === */
+.contact-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 180, 170, 0.15);
+  padding: 40px;
+  max-width: 650px;
+  margin: 70px auto;
+  border-top: 6px solid #00bfa6;
+}
+
+/* === Heading === */
+.contact-card h3 {
+  color: #009f8a;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* === Labels === */
+label {
+  font-weight: 500;
+  color: #06615d;
+}
+
+/* === Inputs === */
+.form-control {
+  border: 2px solid #c8f0eb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #00bfa6;
+  box-shadow: 0 0 10px rgba(0, 191, 166, 0.25);
+}
+
+/* === Button === */
+.btn-submit {
+  background-color: #00bfa6;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 600;
+  padding: 14px;
+  font-size: 1.05rem;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background-color: #009f8a;
+  transform: scale(1.03);
+}
+
+/* === Decorative Icon === */
+.icon-medical {
+  display: block;
+  font-size: 2rem;
+  color: #00bfa6;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .contact-card {
+    padding: 25px;
+    margin: 40px 15px;
+  }
+}
+</style>
+
+<!-- === Contact Form Section === -->
+<div class="contact-card" data-aos="fade-up">
+  <div class="icon-medical">💊</div>
+  <h3>Contact MediCart Support</h3>
+
+  <form action="{% url 'contact' %}" method="post">
+    {% csrf_token %}
+
+    <!-- Name -->
+    <div class="mb-3">
+      <label for="name" class="form-label">Full Name</label>
+      <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+    </div>
+
+    <!-- Email -->
+    <div class="mb-3">
+      <label for="email" class="form-label">Email Address</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+    </div>
+
+    <!-- Phone -->
+    <div class="mb-3">
+      <label for="phone" class="form-label">Phone Number</label>
+      <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 9876543210" required>
+    </div>
+
+    <!-- Message -->
+    <div class="mb-3">
+      <label for="desc" class="form-label">Your Message</label>
+      <textarea class="form-control" id="desc" name="desc" rows="4" placeholder="Write your message..." required></textarea>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" class="btn btn-submit w-100">📨 Send Message</button>
+  </form>
+</div>
+
+{% if messages %}
+<script>
+{% for message in messages %}
+  alert("{{ message|escapejs }}");
+{% endfor %}
+</script>
+{% endif %}
+{% endblock %}
+
+{% block js %}
+<!-- ✅ SweetAlert + AOS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init();
+
+  {% if thank %}
+  Swal.fire({
+    icon: 'success',
+    title: 'Message Sent ✅',
+    text: 'Thank you for contacting MediCart! Our support team will reach out soon.',
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#00bfa6'
+  }).then(() => {
+    window.location.href = "/store";
+  });
+  {% endif %}
+</script>
+{% endblock %}

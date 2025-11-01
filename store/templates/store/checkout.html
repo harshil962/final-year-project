@@ -1,0 +1,189 @@
+{% extends 'store/basic.html' %}
+{% block title %}Checkout - My Awesome Cart{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+  <h2 class="mb-4 text-center text-primary" data-aos="fade-down">
+    🛒 Step 1 - My Awesome Cart Express Checkout
+  </h2>
+  <p class="text-center text-muted" data-aos="fade-up">
+    Review your cart items and fill in your details to place your order.
+  </p>
+
+  <div class="row mt-5">
+    <!-- Step 1: Cart Items -->
+    <div class="col-lg-5 mb-4" data-aos="fade-right">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0">Your Cart Items</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-group mb-3" id="items"></ul>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mt-3 bg-light p-3 rounded">
+              <li class="breadcrumb-item active" aria-current="page">
+                Your Cart Total Is 
+                <b>Rs.<span id="totalPrice">0</span></b> — Enter your details below & place your order.
+              </li>
+            </ol>
+          </nav>
+          <div class="d-flex justify-content-between mt-2">
+            <strong>Total Items:</strong>
+            <span id="totalQty" class="badge bg-primary rounded-pill">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Address Form -->
+    <div class="col-lg-7" data-aos="fade-left">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">📦 Shipping & Details</h5>
+        </div>
+        <div class="card-body">
+          <form method="post" action="/store/checkout/">{% csrf_token %}
+            <input type="hidden" name="itemsJson" id="itemsJson">
+            <input type="hidden" name="amount" id="amount">
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="name">Full Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="address1">Street Address</label>
+              <input type="text" class="form-control" id="address1" name="address1" placeholder="1234 Main St" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="address2">Address Line 2 <small class="text-muted">(Optional)</small></label>
+              <input type="text" class="form-control" id="address2" name="address2" placeholder="Apartment, studio, or floor">
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="city">City</label>
+                <input type="text" class="form-control" id="city" name="city" required>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="state">State</label>
+                <input type="text" class="form-control" id="state" name="state" required>
+              </div>
+              <div class="col-md-2 mb-3">
+                <label for="zip_code">Zip</label>
+                <input type="text" class="form-control" id="zip_code" name="zip_code" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="phone">Phone Number</label>
+              <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 9876543210" required>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 mt-3 py-2">
+              ✅ Place Order Securely
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<!-- AOS Animation -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>AOS.init();</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function(){
+  let cart = {};
+  if(localStorage.getItem('cart')){
+      cart = JSON.parse(localStorage.getItem('cart'));
+  }
+
+  const $items = $('#items');
+  let totalPrice = 0;
+  let totalQty = 0;
+
+  function updateCartDisplay(){
+      $items.empty();
+      totalPrice = 0;
+      totalQty = 0;
+
+      if($.isEmptyObject(cart)){
+          $items.append('<li class="list-group-item text-center text-muted">🛍️ Your cart is empty.<br>Add items before checking out!</li>');
+      } else {
+          for(let item in cart){
+              const name = cart[item].name || item;
+              const qty = Number(cart[item].qty) || 1;
+              const price = Number(cart[item].price) || 0;
+              totalQty += qty;
+              totalPrice += qty * price;
+
+              const itemHTML = `
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div><strong>${name}</strong><br><small class="text-muted">Rs. ${price}</small></div>
+                  <div class="btn-group" role="group">
+                      <button class="btn btn-sm btn-outline-secondary minus" data-item="${item}">−</button>
+                      <span class="mx-2" id="qty-${item}">${qty}</span>
+                      <button class="btn btn-sm btn-outline-secondary plus" data-item="${item}">+</button>
+                  </div>
+              </li>`;
+              $items.append(itemHTML);
+          }
+      }
+
+      $('#totalQty').text(totalQty);
+      $('#totalPrice').text(totalPrice.toFixed(2));
+      $('#itemsJson').val(JSON.stringify(cart));
+  }
+
+  // Increase qty
+  $(document).on('click', '.plus', function(){
+      const item = $(this).data('item');
+      cart[item].qty++;
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartDisplay();
+  });
+
+  // Decrease qty
+  $(document).on('click', '.minus', function(){
+      const item = $(this).data('item');
+      if(cart[item].qty > 1){
+          cart[item].qty--;
+      } else {
+          delete cart[item];
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartDisplay();
+  });
+
+  updateCartDisplay();
+
+  {% if thank %}
+  Swal.fire({
+      icon: 'success',
+      title: 'Order Placed 🎉',
+      text: 'Thanks for ordering with us! Your order ID is {{id}}. Use it to track your order.',
+      confirmButtonText: 'OK'
+  }).then(() => {
+      localStorage.clear();
+      window.location.href = "/store";
+  });
+  {% endif %}
+  $('#amount').val($('#totalPrice').html())
+});
+
+</script>
+{% endblock %}

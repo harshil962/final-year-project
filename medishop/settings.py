@@ -60,6 +60,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # add this
+
 ]
 
 ROOT_URLCONF = 'medishop.urls'
@@ -130,6 +132,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -144,3 +148,6 @@ RAZORPAY_KEY_SECRET = "f0L9oeda0JYB7OZrwbWr7z03"
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'ShopHome'
 LOGOUT_REDIRECT_URL = 'login'
+
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

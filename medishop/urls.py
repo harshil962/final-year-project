@@ -24,4 +24,6 @@ urlpatterns = [
     path('store/',include('store.urls')),
     path('blog/',include('blog.urls')),
     path('',views.index)
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

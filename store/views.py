@@ -112,7 +112,7 @@ def checkout(request):
 
         order.razorpay_order_id = razorpay_order['id']
         order.save()
-
+        callback_url = request.build_absolute_uri('/store/paymenthandler/')
         context = {
             "order": order,
             "razorpay_order_id": razorpay_order['id'],
@@ -120,7 +120,7 @@ def checkout(request):
             "amount": int(amount * 100),
             "display_amount": amount,
             "currency": "INR",
-            "callback_url": "https://hypertense-kookily-grayce.ngrok-free.dev/store/paymenthandler/",
+            "callback_url": callback_url,
         }
 
         return render(request, "store/payment.html", context)

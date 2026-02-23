@@ -7,7 +7,6 @@ from django.contrib import messages
 from .models import Contact
 import json
 from django.views.decorators.csrf import csrf_exempt
-from paytmchecksum import PaytmChecksum
 from math import ceil
 import razorpay
 from django.conf import settings

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
@@ -24,19 +25,8 @@ class Contact(models.Model):
     def __str__(self):
         return self.name
     
-# class Orders(models.Model):
-#     order_id =models.AutoField(primary_key=True)
-#     amount=models.IntegerField(default=0)
-#     items_json= models.CharField(max_length=5000)
-#     name=models.CharField(max_length=90)
-#     email=models.CharField(max_length=90)
-#     address=models.CharField(max_length=90)
-#     city=models.CharField(max_length=90)
-#     state=models.CharField(max_length=90)
-#     zip_code=models.CharField(max_length=90)
-#     phone = models.CharField(max_length=15, default='0000000000')
-
 class Orders(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_id = models.AutoField(primary_key=True)
     amount = models.IntegerField(default=0)
     items_json = models.CharField(max_length=5000)

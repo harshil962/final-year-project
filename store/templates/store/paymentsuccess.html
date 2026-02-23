@@ -105,8 +105,18 @@ document.addEventListener('DOMContentLoaded', function() {
     confirmButtonText: 'OK',
     allowOutsideClick: false
   }).then(() => {
-    localStorage.removeItem('cart');
-    window.location.href = "{% url 'ShopHome' %}";
+// Get username and dynamic key
+const username = "{{ request.user.username|default:'guest' }}";
+const CART_KEY = "cart_" + username;
+
+// ✅ Clear correct cart key
+localStorage.removeItem(CART_KEY);
+
+// Optional: also clear guest cart for safety
+localStorage.removeItem('cart');
+
+window.location.href = "{% url 'ShopHome' %}";
+
   });
 });
 </script>

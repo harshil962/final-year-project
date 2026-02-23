@@ -42,18 +42,21 @@
           <h5 class="mb-0">📦 Shipping & Details</h5>
         </div>
         <div class="card-body">
-          <form method="post" action="/store/checkout/">{% csrf_token %}
+          <form method="post" action="/store/checkout/">
+            {% csrf_token %}
             <input type="hidden" name="itemsJson" id="itemsJson">
             <input type="hidden" name="amount" id="amount">
 
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="name">Full Name</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                <input type="text" class="form-control" id="name" name="name"
+                       value="{{ prefill.name|default:'' }}" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="email">Email Address</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+                <input type="email" class="form-control" id="email" name="email"
+                       value="{{ prefill.email|default:'' }}" required>
               </div>
             </div>
 
@@ -87,7 +90,7 @@
               <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 9876543210" required>
             </div>
 
-            <button type="submit" class="btn btn-success w-100 mt-3 py-2">
+            <button type="submit" id="placeOrderBtn" class="btn btn-success w-100 mt-3 py-2">
               ✅ Place Order Securely
             </button>
           </form>
@@ -105,85 +108,101 @@
 <script>AOS.init();</script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
 $(document).ready(function(){
+  let username = "{{ user.username|default:'guest' }}";
+  const CART_KEY = "cart_" + username;
+
+  // ✅ Load or initialize cart
   let cart = {};
-  if(localStorage.getItem('cart')){
-      cart = JSON.parse(localStorage.getItem('cart'));
+  try {
+    cart = JSON.parse(localStorage.getItem(CART_KEY)) || {};
+  } catch (e) {
+    cart = {};
   }
 
   const $items = $('#items');
+  const $placeOrderBtn = $('#placeOrderBtn');
   let totalPrice = 0;
   let totalQty = 0;
 
-  function updateCartDisplay(){
-      $items.empty();
-      totalPrice = 0;
-      totalQty = 0;
+  // ✅ Function to refresh cart UI and save
+  function updateCartDisplay() {
+    $items.empty();
+    totalPrice = 0;
+    totalQty = 0;
 
-      if($.isEmptyObject(cart)){
-          $items.append('<li class="list-group-item text-center text-muted">🛍️ Your cart is empty.<br>Add items before checking out!</li>');
-      } else {
-          for(let item in cart){
-              const name = cart[item].name || item;
-              const qty = Number(cart[item].qty) || 1;
-              const price = Number(cart[item].price) || 0;
-              totalQty += qty;
-              totalPrice += qty * price;
+    if ($.isEmptyObject(cart)) {
+      $items.append('<li class="list-group-item text-center text-muted">🛍️ Your cart is empty.<br>Add items before checking out!</li>');
+      $placeOrderBtn.prop("disabled", true).text("Cart is empty ❌");
+    } else {
+      $placeOrderBtn.prop("disabled", false).text("✅ Place Order Securely");
 
-              const itemHTML = `
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <div><strong>${name}</strong><br><small class="text-muted">Rs. ${price}</small></div>
-                  <div class="btn-group" role="group">
-                      <button class="btn btn-sm btn-outline-secondary minus" data-item="${item}">−</button>
-                      <span class="mx-2" id="qty-${item}">${qty}</span>
-                      <button class="btn btn-sm btn-outline-secondary plus" data-item="${item}">+</button>
-                  </div>
-              </li>`;
-              $items.append(itemHTML);
-          }
+      for (let item in cart) {
+        const name = cart[item].name || item;
+        const qty = Number(cart[item].qty) || 1;
+        const price = Number(cart[item].price) || 0;
+        totalQty += qty;
+        totalPrice += qty * price;
+
+        const itemHTML = `
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div><strong>${name}</strong><br><small class="text-muted">Rs. ${price}</small></div>
+            <div class="btn-group" role="group">
+              <button class="btn btn-sm btn-outline-secondary minus" data-item="${item}">−</button>
+              <span class="mx-2" id="qty-${item}">${qty}</span>
+              <button class="btn btn-sm btn-outline-secondary plus" data-item="${item}">+</button>
+            </div>
+          </li>`;
+        $items.append(itemHTML);
       }
+    }
 
-      $('#totalQty').text(totalQty);
-      $('#totalPrice').text(totalPrice.toFixed(2));
-      $('#itemsJson').val(JSON.stringify(cart));
+    $('#totalQty').text(totalQty);
+    $('#totalPrice').text(totalPrice.toFixed(2));
+    $('#itemsJson').val(JSON.stringify(cart));
+    $('#amount').val(totalPrice.toFixed(2));
+
+    // ✅ Always save the latest version
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }
 
-  // Increase qty
-  $(document).on('click', '.plus', function(){
-      const item = $(this).data('item');
-      cart[item].qty++;
-      localStorage.setItem('cart', JSON.stringify(cart));
-      updateCartDisplay();
+  // ✅ Increase qty
+  $(document).on('click', '.plus', function() {
+    const item = $(this).data('item');
+    if (cart[item]) cart[item].qty++;
+    updateCartDisplay();
   });
 
-  // Decrease qty
-  $(document).on('click', '.minus', function(){
-      const item = $(this).data('item');
-      if(cart[item].qty > 1){
-          cart[item].qty--;
+  // ✅ Decrease qty
+  $(document).on('click', '.minus', function() {
+    const item = $(this).data('item');
+    if (cart[item]) {
+      if (cart[item].qty > 1) {
+        cart[item].qty--;
       } else {
-          delete cart[item];
+        delete cart[item];
       }
-      localStorage.setItem('cart', JSON.stringify(cart));
-      updateCartDisplay();
+    }
+    updateCartDisplay();
   });
 
+  // ✅ Initialize
   updateCartDisplay();
 
+  // ✅ SweetAlert for successful order
   {% if thank %}
   Swal.fire({
-      icon: 'success',
-      title: 'Order Placed 🎉',
-      text: 'Thanks for ordering with us! Your order ID is {{id}}. Use it to track your order.',
-      confirmButtonText: 'OK'
+    icon: 'success',
+    title: 'Order Placed 🎉',
+    text: 'Thanks for ordering with us! Your order ID is {{id}}. Use it to track your order.',
+    confirmButtonText: 'OK'
   }).then(() => {
-      localStorage.clear();
-      window.location.href = "/store";
+    localStorage.removeItem(CART_KEY);
+    window.location.href = "/store";
   });
   {% endif %}
-  $('#amount').val($('#totalPrice').html())
 });
-
 </script>
 {% endblock %}

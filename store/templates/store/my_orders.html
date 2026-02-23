@@ -1,0 +1,142 @@
+{% extends 'store/basic.html' %}
+{% block body %}
+
+<!-- 🌿 Responsive Styling -->
+<style>
+  body {
+    background: linear-gradient(135deg, #e0f7fa, #ffffff);
+    font-family: 'Poppins', sans-serif;
+  }
+
+  h2 {
+    font-weight: 600;
+    color: #00695c;
+  }
+
+  .table {
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  .table thead th {
+    background-color: #a7f3d0 !important;
+    font-weight: 600;
+    color: #1b4332;
+    white-space: nowrap;
+  }
+
+  .table td code {
+    background-color: #f1f5f9;
+    border-radius: 5px;
+    padding: 2px 5px;
+    font-size: 0.85rem;
+  }
+
+  .badge {
+    padding: 0.5em 0.8em;
+    font-size: 0.9rem;
+  }
+
+  /* 📱 Mobile responsiveness */
+  @media (max-width: 768px) {
+    .table {
+      font-size: 0.85rem;
+    }
+    h2 {
+      font-size: 1.4rem;
+    }
+    .table td, .table th {
+      padding: 0.4rem;
+    }
+    .table code {
+      font-size: 0.75rem;
+      word-break: break-all;
+    }
+  }
+
+  /* 🧾 Scrollable container with smooth scroll */
+  .table-responsive {
+    max-height: 70vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #9ca3af #f3f4f6;
+  }
+
+  .table-responsive::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .table-responsive::-webkit-scrollbar-thumb {
+    background-color: #9ca3af;
+    border-radius: 4px;
+  }
+
+  .table-responsive::-webkit-scrollbar-track {
+    background-color: #f3f4f6;
+  }
+</style>
+
+<div class="container mt-5" data-aos="fade-up">
+  <h2 class="text-center mb-4">My Orders</h2>
+
+  {% if orders %}
+  <div class="table-responsive shadow-sm rounded">
+    <table class="table table-bordered table-hover align-middle text-center bg-white">
+      <thead class="table-success">
+        <tr>
+          <th>Order ID</th>
+
+          <th>Items</th>
+          <th>Total (₹)</th>
+          <th>Status</th>
+          <th>Last Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td>#{{ order.order_id }}</td>
+
+         
+
+          <td class="text-start">
+            {% if order.parsed_items %}
+              {% for key, item in order.parsed_items.items %}
+                <div>{{ item.name }} × {{ item.quantity }}</div>
+              {% endfor %}
+            {% else %}
+              <div>No items</div>
+            {% endif %}
+          </td>
+
+          <td>{{ order.amount }}</td>
+
+          <td>
+            {% if order.payment_status == "Success" %}
+              <span class="badge bg-success">Paid</span>
+            {% elif order.payment_status == "Failed" %}
+              <span class="badge bg-danger">Failed</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">{{ order.payment_status }}</span>
+            {% endif %}
+          </td>
+
+          <td>{{ order.latest_update }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-center text-muted mt-4">You have not placed any orders yet.</p>
+  {% endif %}
+</div>
+
+<!-- AOS Animation -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+  AOS.init({ duration: 800 });
+</script>
+
+{% endblock %}

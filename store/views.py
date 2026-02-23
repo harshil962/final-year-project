@@ -11,15 +11,62 @@ from paytmchecksum import PaytmChecksum
 from math import ceil
 import razorpay
 from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from .forms import RegisterForm 
 
 
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
-# MERCHANT_KEY = 'kbzk98n@654!'
 
-# # --- 🎯 CRITICAL FIX: Ensure the key is exactly 16 bytes long ---
-# # This line trims the 20-byte key to a 16-byte key: 'KFZMLV7397327500'
-# MERCHANT_KEY = (MERCHANT_KEY + '0'*32)[:16]
+# 🟢 Register new user
+def register_view(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Account created successfully! Please log in.")
+            return redirect('login')
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = RegisterForm()
+    return render(request, 'store/register.html', {'form': form})
+
+# 🟢 Login user
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, f"Welcome, {username}!")
+            return redirect('ShopHome')
+        else:
+            messages.error(request, "Invalid username or password.")
+    return render(request, 'store/login.html')
+
+# 🟢 Logout user
+def logout_view(request):
+    logout(request)
+    messages.info(request, "You have been logged out.")
+    return redirect('login')
+
+def index(request):
+    allProds=[]
+    catprods= Product.objects.values('category','product_id')
+    cats ={item['category']for item in catprods}
+    for cat in cats:
+        prod= Product.objects.filter(category=cat)
+        n = len(prod)
+        nSlides = n//4 + ceil((n/4)-(n//4))
+        allProds.append([prod, range(1,nSlides),nSlides])
+
+    params={'allProds':allProds}  
+    return render(request, 'store/index.html', params)
+
+@login_required(login_url='login')  # ✅ Ensure only logged-in users can checkout
 def checkout(request):
     if request.method == "POST":
         items_json = request.POST.get('itemsJson', '')
@@ -32,14 +79,14 @@ def checkout(request):
         zip_code = request.POST.get('zip_code', '')
         phone = request.POST.get('phone', '')
 
-        # Convert amount safely
         try:
             amount = float(amount)
         except ValueError:
             amount = 0
 
-        # Save order
-        order = Orders(
+        # ✅ Save order with user
+        order = Orders.objects.create(
+            user=request.user,
             items_json=items_json,
             name=name,
             email=email,
@@ -50,54 +97,41 @@ def checkout(request):
             phone=phone,
             amount=amount
         )
-        order.save()
+        OrderUpdate.objects.create(order_id=order.order_id, update_desc="Order placed successfully")
 
-        update = OrderUpdate(order_id=order.order_id, update_desc="The order has been placed")
-        update.save()
-
-        # Create Razorpay order (amount in paise)
+        # ✅ Create Razorpay order
         razorpay_order = razorpay_client.order.create({
-            "amount": int(amount * 100),  # Razorpay expects paise
+            "amount": int(amount * 100),  # Convert to paise
             "currency": "INR",
-            "payment_capture": "1",  # Auto-capture after payment
+            "payment_capture": "1",
             "notes": {
                 "order_id": str(order.order_id),
-                "name": name,
-                "email": email
-            }
+                "user": request.user.username,
+                "email": email,
+            },
         })
 
-        # Store Razorpay order ID in DB for verification
         order.razorpay_order_id = razorpay_order['id']
         order.save()
-        
-        # Amount in paise for Razorpay
-        razorpay_amount = int(amount * 100)
 
-# Pass amount in rupees for display
         context = {
             "order": order,
             "razorpay_order_id": razorpay_order['id'],
             "razorpay_merchant_key": settings.RAZORPAY_KEY_ID,
-            "amount": razorpay_amount,           # for Razorpay
-            "display_amount": amount,            # for showing to user in ₹
+            "amount": int(amount * 100),
+            "display_amount": amount,
             "currency": "INR",
             "callback_url": "https://hypertense-kookily-grayce.ngrok-free.dev/store/paymenthandler/",
         }
 
-        # Pass info to frontend
-        # context = {
-        #     "order": order,
-        #     "razorpay_order_id": razorpay_order['id'],
-        #     "razorpay_merchant_key": settings.RAZORPAY_KEY_ID,
-        #     "amount": int(amount * 100),
-        #     "currency": "INR",
-        #     "callback_url": "https://hypertense-kookily-grayce.ngrok-free.dev/store/paymenthandler/",
-        # }
+        return render(request, "store/payment.html", context)
 
-        return render(request, 'store/payment.html', context)
-
-    return render(request, 'store/checkout.html')
+    return render(request, "store/checkout.html", {
+        "prefill": {
+            "name": request.user.get_full_name() or request.user.username,
+            "email": request.user.email,
+        }
+    })
 
 
 @csrf_exempt
@@ -118,7 +152,6 @@ def paymenthandler(request):
 
             try:
                 razorpay_client.utility.verify_payment_signature(params_dict)
-                # ✅ Signature verified successfully
 
                 # Update your order status in DB
                 order = Orders.objects.get(razorpay_order_id=razorpay_order_id)
@@ -132,26 +165,61 @@ def paymenthandler(request):
                 return render(request, 'store/paymentsuccess.html', {"payment_id": payment_id,"order_id": order.order_id})
 
             except razorpay.errors.SignatureVerificationError:
-                # ❌ Signature mismatch
                 return render(request, 'store/paymentfailed.html')
 
         except Exception as e:
             return HttpResponse(f"Error: {str(e)}")
 
     return HttpResponse("Invalid request method", status=400)
-def index(request):
 
-    allProds=[]
-    catprods= Product.objects.values('category','product_id')
-    cats ={item['category']for item in catprods}
-    for cat in cats:
-        prod= Product.objects.filter(category=cat)
-        n = len(prod)
-        nSlides = n//4 + ceil((n/4)-(n//4))
-        allProds.append([prod, range(1,nSlides),nSlides])
+def tracker(request):
+    if request.method == "POST":
+        orderId = request.POST.get('orderId', '')
+        email = request.POST.get('email', '')
+        try:
+            order = Orders.objects.filter(order_id=orderId, email=email)
+            if order.exists():
+                order_obj = order.first()
+                update_qs = OrderUpdate.objects.filter(order_id=orderId).order_by('timestamp')
+                
+                updates = []
+                for item in update_qs:
+                    formatted_time = item.timestamp.strftime("%d %b %Y, %I:%M %p")
+                    updates.append({
+                        'text': item.update_desc,
+                        'time': formatted_time
+                    })
 
-    params={'allProds':allProds}  
-    return render(request, 'store/index.html', params)
+                # items_json stored in order
+                items = json.loads(order_obj.items_json)  # convert string JSON to Python dict/list
+
+                return JsonResponse({
+                    'updates': updates,
+                    'items': items
+                })
+            else:
+                return JsonResponse({'error': 'No order found'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+    return render(request, 'store/tracker.html')
+
+
+@login_required(login_url='login')
+def my_orders(request):
+    """Show all orders placed by the logged-in user"""
+    orders = Orders.objects.filter(user=request.user).order_by('-order_id')
+
+    for order in orders:
+        try:
+            order.parsed_items = json.loads(order.items_json)
+        except json.JSONDecodeError:
+            order.parsed_items = {}
+
+        # Get latest order update (optional)
+        last_update = OrderUpdate.objects.filter(order_id=order.order_id).order_by('-timestamp').first()
+        order.latest_update = last_update.update_desc if last_update else "Order placed"
+
+    return render(request, 'store/my_orders.html', {"orders": orders})
 
 
 def searchMatch(query, item):
@@ -199,40 +267,6 @@ def contact(request):
         thank = True
 
     return render(request, 'store/contact.html', {'thank': thank})
-
-def tracker(request):
-    if request.method == "POST":
-        orderId = request.POST.get('orderId', '')
-        email = request.POST.get('email', '')
-        try:
-            order = Orders.objects.filter(order_id=orderId, email=email)
-            if order.exists():
-                order_obj = order.first()
-                update_qs = OrderUpdate.objects.filter(order_id=orderId).order_by('timestamp')
-                
-                updates = []
-                for item in update_qs:
-                    formatted_time = item.timestamp.strftime("%d %b %Y, %I:%M %p")
-                    updates.append({
-                        'text': item.update_desc,
-                        'time': formatted_time
-                    })
-
-                # items_json stored in order
-                items = json.loads(order_obj.items_json)  # convert string JSON to Python dict/list
-
-                return JsonResponse({
-                    'updates': updates,
-                    'items': items
-                })
-            else:
-                return JsonResponse({'error': 'No order found'})
-        except Exception as e:
-            return JsonResponse({'error': str(e)})
-    return render(request, 'store/tracker.html')
-
-
-
 
 
 def productView(request, id):   # `id` comes from URL

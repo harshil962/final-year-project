@@ -1,0 +1,207 @@
+{% extends 'store/basic.html' %}
+{% load static %}
+{% block body %}
+<!-- AOS CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+<style>
+  body {
+    background: linear-gradient(135deg, #e0f7fa, #ffffff);
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+  }
+
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  .login-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 150, 136, 0.15);
+    padding: 2rem;
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    overflow: hidden;
+    z-index: 2;
+  }
+
+  .login-card::before,
+  .login-card::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  .login-card::before {
+    top: -50px;
+    right: -50px;
+    width: 120px;
+    height: 120px;
+    background: rgba(0, 150, 136, 0.1);
+  }
+
+  .login-card::after {
+    bottom: -60px;
+    left: -60px;
+    width: 150px;
+    height: 150px;
+    background: rgba(0, 188, 212, 0.1);
+  }
+
+  .login-title {
+    color: #004d40;
+    font-weight: 700;
+  }
+
+  .form-label {
+    color: #00796b;
+    font-weight: 600;
+  }
+
+  input {
+    border-radius: 10px !important;
+    border: 1px solid #b2dfdb !important;
+    padding: 10px 12px !important;
+    transition: all 0.3s ease;
+  }
+
+  input:focus {
+    border-color: #26a69a !important;
+    box-shadow: 0 0 8px rgba(38, 166, 154, 0.3);
+    outline: none;
+  }
+
+  .btn-primary {
+    background: #26a69a;
+    border: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background: #00796b;
+    transform: translateY(-2px);
+  }
+
+  .alert {
+    border-radius: 10px;
+    font-size: 0.9rem;
+  }
+
+  .text-muted a {
+    color: #009688;
+  }
+
+  .text-muted a:hover {
+    text-decoration: underline;
+  }
+
+  /* 👁️ Show Password Icon */
+  .password-wrapper {
+    position: relative;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #26a69a;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+  }
+
+  .toggle-password:hover {
+    color: #00796b;
+  }
+
+  /* 📱 Responsive */
+  @media (max-width: 768px) {
+    .login-card {
+      padding: 1.8rem;
+      max-width: 90%;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .login-card {
+      padding: 1.5rem;
+      border-radius: 15px;
+      max-width: 95%;
+    }
+  }
+</style>
+
+<!-- 🩺 Login Section -->
+<div class="login-container">
+  <div class="login-card" data-aos="fade-up" data-aos-duration="1000">
+    <h2 class="text-center mb-4 login-title">🔐 Login to Your Medishop Account</h2>
+    <p class="text-center text-muted mb-4">Access your medical dashboard securely.</p>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center" data-aos="fade-down">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" autocomplete="off" data-aos="fade-up" data-aos-delay="200">
+      {% csrf_token %}
+      <div class="mb-3" data-aos="fade-right" data-aos-delay="150">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control form-control-lg" placeholder="Enter your username" required>
+      </div>
+
+      <!-- 👁️ Password Field with Toggle -->
+      <div class="mb-3 password-wrapper" data-aos="fade-right" data-aos-delay="300">
+        <label class="form-label">Password</label>
+        <input type="password" id="password" name="password" class="form-control form-control-lg" placeholder="Enter your password" required>
+        <i class="bi bi-eye-slash toggle-password" id="togglePassword"></i>
+      </div>
+
+      <div class="text-center mt-3" data-aos="zoom-in" data-aos-delay="450">
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+          Login Now
+        </button>
+      </div>
+    </form>
+
+    <div class="text-center mt-4" data-aos="fade-up" data-aos-delay="600">
+      <small class="text-muted">
+        Don’t have an account?
+        <a href="{% url 'register' %}" class="fw-semibold">Register here</a>
+      </small>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap Icons & AOS JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+  AOS.init({
+    once: true,
+    duration: 800,
+    offset: 100,
+  });
+
+  // 👁️ Show/Hide Password Toggle
+  const togglePassword = document.querySelector("#togglePassword");
+  const password = document.querySelector("#password");
+
+  togglePassword.addEventListener("click", function () {
+    const type = password.getAttribute("type") === "password" ? "text" : "password";
+    password.setAttribute("type", type);
+
+    this.classList.toggle("bi-eye");
+    this.classList.toggle("bi-eye-slash");
+  });
+</script>
+{% endblock %}

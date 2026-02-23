@@ -139,3 +139,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 RAZORPAY_KEY_ID = "rzp_test_RW7QRUWqAZ1USL"
 RAZORPAY_KEY_SECRET = "f0L9oeda0JYB7OZrwbWr7z03"
+
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'ShopHome'
+LOGOUT_REDIRECT_URL = 'login'

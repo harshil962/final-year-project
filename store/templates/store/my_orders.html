@@ -54,6 +54,29 @@
     }
   }
 
+  @media (max-width: 480px) {
+    .table {
+      font-size: 0.78rem;
+    }
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.4em 0.6em;
+    }
+  }
+
+  .empty-orders {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6b7280;
+  }
+
+  .empty-orders i {
+    font-size: 3rem;
+    color: #a7f3d0;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
   /* 🧾 Scrollable container with smooth scroll */
   .table-responsive {
     max-height: 70vh;
@@ -128,15 +151,17 @@
     </table>
   </div>
   {% else %}
-  <p class="text-center text-muted mt-4">You have not placed any orders yet.</p>
+  <div class="empty-orders" data-aos="fade-up">
+    <i class="bi bi-bag-x"></i>
+    <p class="mb-2">You have not placed any orders yet.</p>
+    <a href="{% url 'ShopHome' %}" class="btn btn-brand mt-2">Start Shopping</a>
+  </div>
   {% endif %}
 </div>
+{% endblock %}
 
-<!-- AOS Animation -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+{% block js %}
 <script>
   AOS.init({ duration: 800 });
 </script>
-
 {% endblock %}

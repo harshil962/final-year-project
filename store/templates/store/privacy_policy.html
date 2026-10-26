@@ -1,42 +1,86 @@
 {% extends "store/basic.html" %}
 {% block title %}Privacy Policy{% endblock %}
-{% block body %}
-<section class="py-5" style="background-color: #f8fdfc; min-height: 80vh;">
-  <div class="container" data-aos="fade-up">
-    
-    <!-- Page Header -->
-    <div class="text-center mb-5">
-      <h1 class="fw-bold text-primary" style="font-family: 'Poppins', sans-serif;">Privacy Policy</h1>
-      <p class="text-muted mt-2" style="font-size: 1.1rem;">
-        Your privacy is important to us. We are committed to protecting your personal information.
-      </p>
-    </div>
 
-    <!-- Privacy Content Card -->
-    <div class="card shadow-sm border-0 rounded-4 p-4" style="background: #ffffff;">
-      <p class="mb-4" style="line-height: 1.7; font-size: 1rem; color: #555;">
+{% block css %}
+<style>
+  .policy-hero {
+    background: linear-gradient(135deg, #e6fafa, #f8fdfc);
+    border-radius: 0 0 40px 40px;
+  }
+
+  .policy-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    box-shadow: 0 6px 16px rgba(0, 166, 166, 0.18);
+  }
+
+  .policy-icon i {
+    font-size: 1.8rem;
+    color: #00a6a6;
+  }
+
+  .policy-card p {
+    line-height: 1.7;
+    font-size: 1rem;
+    color: #555;
+  }
+
+  .policy-card strong {
+    color: #007b83;
+  }
+
+  @media (max-width: 576px) {
+    .policy-hero h1 {
+      font-size: 1.6rem;
+    }
+
+    .policy-card {
+      padding: 1.5rem !important;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="policy-hero py-5">
+  <div class="container text-center" data-aos="fade-down">
+    <div class="policy-icon"><i class="bi bi-shield-lock"></i></div>
+    <h1 class="fw-bold text-primary">Privacy Policy</h1>
+    <p class="text-muted mt-2" style="font-size: 1.1rem;">
+      Your privacy is important to us. We are committed to protecting your personal information.
+    </p>
+  </div>
+</section>
+
+<section class="py-5" style="background-color: #f8fdfc; min-height: 50vh;">
+  <div class="container" data-aos="fade-up">
+    <div class="card policy-card shadow-sm border-0 rounded-4 p-4 mx-auto" style="background: #ffffff; max-width: 800px;">
+      <p class="mb-4">
         At <strong>Medicart</strong>, we value your privacy. We collect only minimal personal data necessary 
         to process your orders and improve your shopping experience. Your information is kept secure and 
         will never be sold or shared with third parties, except as required by law.
       </p>
-      <p class="mb-4" style="line-height: 1.7; font-size: 1rem; color: #555;">
+      <p class="mb-4">
         Payment details are handled securely through trusted payment gateways (like Paytm, Razorpay, etc.) 
         and are never stored on our servers. We use encryption and security measures to ensure your data 
         is protected at all times.
       </p>
-      <p style="line-height: 1.7; font-size: 1rem; color: #555;">
+      <p class="mb-0">
         By using Medicart, you agree to this Privacy Policy and our commitment to safeguarding your personal information.
       </p>
     </div>
-
   </div>
 </section>
+{% endblock %}
 
-<!-- AOS Animation Init -->
+{% block js %}
 <script>
-  AOS.init({
-    duration: 800,
-    once: true
-  });
+  AOS.init({ duration: 800, once: true });
 </script>
 {% endblock %}

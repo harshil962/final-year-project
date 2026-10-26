@@ -156,17 +156,18 @@ body {
 <div class="container product-section">
   <div class="row justify-content-center">
     <div class="col-lg-10">
-      <div class="row g-4 product-card align-items-center">
+      <div class="row g-4 product-card align-items-center" data-aos="fade-up">
         
         <!-- 🖼️ Product Image -->
         <div class="col-md-5 text-center">
           <img src="/media/{{ product.image }}" 
                alt="{{ product.product_name }}" 
-               class="img-fluid product-image shadow-sm">
+               class="img-fluid product-image shadow-sm"
+               data-aos="zoom-in" data-aos-delay="150">
         </div>
         
         <!-- 🧾 Product Details -->
-        <div class="col-md-7 product-details">
+        <div class="col-md-7 product-details" data-aos="fade-left" data-aos-delay="200">
           <h2 id="namepr{{ product.product_id }}">{{ product.product_name }}</h2>
           <p>{{ product.desc }}</p>
           <h4 id="pricepr{{ product.product_id }}" class="price-tag">
@@ -174,16 +175,18 @@ body {
           </h4>
 
           <!-- ✅ Buttons -->
-          <div id="divpr{{ product.product_id }}" class="divpr mb-3">
-            <button class="btn btn-add cart"
-                    data-id="pr{{ product.product_id }}"
-                    data-name="{{ product.product_name }}"
-                    data-price="{{ product.price }}">
-              🛒 Add to Cart
-            </button>
-          </div>
+          <div class="d-flex flex-column flex-sm-row gap-2">
+            <div id="divpr{{ product.product_id }}" class="divpr flex-fill">
+              <button class="btn btn-add cart"
+                      data-id="pr{{ product.product_id }}"
+                      data-name="{{ product.product_name }}"
+                      data-price="{{ product.price }}">
+                🛒 Add to Cart
+              </button>
+            </div>
 
-          <a href="{% url 'ShopHome' %}" class="btn btn-back">← Continue Shopping</a>
+            <a href="{% url 'ShopHome' %}" class="btn btn-back flex-fill">← Continue Shopping</a>
+          </div>
 
           <input type="hidden" id="itemsJson" name="itemsJson">
         </div>
@@ -196,37 +199,15 @@ body {
 {% block js %}
 <script>
 $(function() {
-  let cart = {};
-  try { cart = JSON.parse(localStorage.getItem("cart")) || {}; }
-  catch(e) { cart = {}; }
-
-  function updateCartUI() {
-    localStorage.setItem("cart", JSON.stringify(cart));
-    let totalQty = 0;
-    for (let id in cart) totalQty += cart[id].qty;
-    $("#cart").text(totalQty);
-  }
-
-  updateCartUI();
-
-  $(document).on("click", ".cart", function(e) {
-    e.preventDefault();
-    const id = $(this).data("id");
-    const name = $(this).data("name");
-    const price = parseFloat($(this).data("price")) || 0;
-    if (cart[id]) cart[id].qty += 1;
-    else cart[id] = { qty: 1, name, price };
-    $(this)
-      .removeClass("btn-add")
-      .addClass("btn-success")
-      .text("✅ Added!");
+  // Cart state, storage key, and Add-to-Cart logic are handled globally in basic.html.
+  // This just adds a quick visual "Added!" confirmation on the button itself.
+  $(document).on("click", ".cart", function() {
+    const $btn = $(this);
+    const originalHtml = $btn.html();
+    $btn.addClass("btn-success").removeClass("btn-add").text("✅ Added!");
     setTimeout(() => {
-      $(this)
-        .removeClass("btn-success")
-        .addClass("btn-add")
-        .html("🛒 Add to Cart");
+      $btn.removeClass("btn-success").addClass("btn-add").html(originalHtml);
     }, 1200);
-    updateCartUI();
   });
 });
 </script>

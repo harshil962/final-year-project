@@ -71,48 +71,50 @@ final-year-project/
 
 ## ⚙️ Installation & Setup
 
-### 1️⃣ Clone the repository  
+These instructions are for Windows and PowerShell. First, install Python 3.10 or newer. Download or clone this project, then open a terminal in the project folder that contains `manage.py`.
 
-git clone https://github.com/harshil962/final-year-project.git
-cd final-year-project
+### 1️⃣ Create and activate a virtual environment
 
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
+If PowerShell blocks the activation script, allow scripts for this terminal session and activate again:
 
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+```
 
-### 3️⃣ Install dependencies
+### 2️⃣ Install the project dependencies
 
+```powershell
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
 
-pip install -r requirements.txt
+### 3️⃣ Set up the database
 
-
-### 4️⃣ Configure environment variables
-
-Add your Razorpay credentials in `settings.py`  file:
-
-python
-RAZORPAY_KEY_ID = "your_razorpay_key"
-RAZORPAY_KEY_SECRET = "your_razorpay_secret"
-
-
-### 5️⃣ Apply migrations
-
-
-python manage.py makemigrations
+```powershell
 python manage.py migrate
+```
 
+To sign in to the Django admin, create an administrator account when prompted:
 
-### 6️⃣ Create superuser
-
-
+```powershell
 python manage.py createsuperuser
+```
 
+### 4️⃣ Start the website
 
-### 7️⃣ Run the server
-
+```powershell
 python manage.py runserver
+```
 
+Keep this terminal open while using the site. In Google Chrome, visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/). To open the admin site, visit [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/) and sign in with the superuser account.
 
-Then open: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+Press `Ctrl+C` in the terminal to stop the development server.
 
 
 

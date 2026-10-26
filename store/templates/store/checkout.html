@@ -1,6 +1,76 @@
 {% extends 'store/basic.html' %}
 {% block title %}Checkout - My Awesome Cart{% endblock %}
 
+{% block css %}
+<style>
+  .checkout-card {
+    border-radius: 18px !important;
+    overflow: hidden;
+  }
+
+  .checkout-card .card-header {
+    background: linear-gradient(135deg, #00a6a6, #007b83) !important;
+    border: none;
+    padding: 1rem 1.25rem;
+  }
+
+  .checkout-card.cart-card .card-header {
+    background: linear-gradient(135deg, #2d2d2d, #1a1a1a) !important;
+  }
+
+  #items .list-group-item {
+    border-radius: 10px;
+    margin-bottom: 6px;
+    border: 1px solid #eef2f2;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #007b83;
+    font-size: 0.9rem;
+  }
+
+  .form-control:focus {
+    border-color: #00a6a6;
+    box-shadow: 0 0 0 0.2rem rgba(0, 166, 166, 0.18);
+  }
+
+  #placeOrderBtn {
+    border-radius: 12px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border: none;
+    transition: all 0.25s ease;
+  }
+
+  #placeOrderBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(34, 197, 94, 0.35);
+  }
+
+  @media (max-width: 768px) {
+    .checkout-card .card-header h5 {
+      font-size: 1rem;
+    }
+
+    #placeOrderBtn {
+      font-size: 0.95rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container.my-5 {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    h2.text-center {
+      font-size: 1.3rem;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="container my-5">
   <h2 class="mb-4 text-center text-primary" data-aos="fade-down">
@@ -13,8 +83,8 @@
   <div class="row mt-5">
     <!-- Step 1: Cart Items -->
     <div class="col-lg-5 mb-4" data-aos="fade-right">
-      <div class="card shadow-sm border-0">
-        <div class="card-header bg-dark text-white">
+      <div class="card checkout-card cart-card shadow-sm border-0">
+        <div class="card-header text-white">
           <h5 class="mb-0">Your Cart Items</h5>
         </div>
         <div class="card-body">
@@ -37,8 +107,8 @@
 
     <!-- Step 2: Address Form -->
     <div class="col-lg-7" data-aos="fade-left">
-      <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white">
+      <div class="card checkout-card shadow-sm border-0">
+        <div class="card-header text-white">
           <h5 class="mb-0">📦 Shipping & Details</h5>
         </div>
         <div class="card-body">
@@ -102,9 +172,6 @@
 {% endblock %}
 
 {% block js %}
-<!-- AOS Animation -->
-<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>AOS.init();</script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
